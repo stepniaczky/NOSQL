@@ -1,8 +1,7 @@
 from abc import abstractmethod
-from datetime import date
 from typing import Any
 
-from sqlalchemy import Column, Integer, String, Numeric
+from sqlalchemy import Column, Integer, String
 
 from src.constants.table_names import CLIENT_TYPES
 from src.models import Base
@@ -19,54 +18,39 @@ class ClientType(Base):
         'polymorphic_on': type
     }
 
-    def __init__(self, is_premium, birth_date, *args: Any, **kwargs: Any):
+    def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        if is_premium:
-            return Premium()
-        age = self.age(birth_date)
-        if age < 5 or age > 65:
-            return Reduced()
-        else:
-            return Normal()
 
     def __repr__(self):
-        return "<Client(type='%s')>" % (
-            self.type)
-        
+        return "<Client(type='%s')>" % self.type
+
     @abstractmethod
-    def apply_discount():
+    def apply_discount(self, price):
         pass
-    
-    @staticmethod
-    def age(birth_date):
-        today = date.today()
-        age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
-        return age
 
 
-class Reduced(ClientType):
+class NormalClientType(ClientType):
     __mapper_args__ = {
-        "polymorphic_identity": "reduced",
-    }
-    
-    
-    def apply_discount(price):
-        return 0.5 * price
-
-
-class Normal(ClientType):
-    __mapper_args__ = {
-        "polymorphic_identity": "normal",
+        "polymorphic_identity": "client_type_normal",
     }
 
-
-    def apply_discount(price):
+    def apply_discount(self, price):
         return price
 
-class Premium(ClientType):
+
+class ReducedClientType(ClientType):
     __mapper_args__ = {
-        "polymorphic_identity": "premium",
+        "polymorphic_identity": "client_type_reduced",
     }
-    
-    def apply_discount(price):
-        return 0.1 * price
+
+    def apply_discount(self, price):
+        return price * 0.5
+
+
+class PremiumClientType(ClientType):
+    __mapper_args__ = {
+        "polymorphic_identity": "client_type_premium",
+    }
+
+    def apply_discount(self, price):
+        return price * 0.1

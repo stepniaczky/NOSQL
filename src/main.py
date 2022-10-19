@@ -11,4 +11,4 @@ sessionmaker = get_session(engine)
 # movieManager.add_movie()
 
 client_manager = ClientManager(sessionmaker)
-client_manager.add_client(11122233344, "Imie", "Nazwisko", date(2001, 1, 11), True, "Lodz", "Ketlinga", 13)
+client_manager.add_client('11122233344', "Imie", "Nazwisko", date(2001, 1, 11), True, "Lodz", "Ketlinga", 13)

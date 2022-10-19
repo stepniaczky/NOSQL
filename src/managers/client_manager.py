@@ -1,4 +1,6 @@
+from src.helpers.get_age import get_age
 from src.models import Client, Address
+from src.models.client_type import PremiumClientType, NormalClientType, ReducedClientType, ClientType
 
 
 class ClientManager:
@@ -13,16 +15,29 @@ class ClientManager:
             session.commit()
             session.refresh(new_address)
 
-        # client = Client(client_id, first_name, last_name, birth_date, is_premium, )
+            new_client_type = ReducedClientType(birth_date)
 
-        # with self.sessionmaker() as session:
-        #     try:
-        #         client_type_id = ClientType.query.filter_by(type=cliet_type.type).one().id
-        #         client = Client(client_id, first_name, last_name, birth_date, is_premium, client_type_id, address_id)
-        #         session.add(client)
-        #         session.commit()
-        #     except Exception as e:
-        #         session.rollback()
+            age = get_age(birth_date)
+
+            if is_premium:
+                new_client_type = PremiumClientType(birth_date)
+            elif 5 < age < 65:
+                new_client_type = NormalClientType(birth_date)
+
+            client_type_res = session.query(ClientType).filter(ClientType.type == new_client_type.type).one()
+
+            if not client_type_res:
+                session.add(new_client_type)
+                session.commit()
+                session.refresh(new_client_type)
+
+            client_type_to_set = client_type_res if client_type_res else new_client_type
+
+            new_client = Client(pesel=pesel, first_name=first_name, last_name=last_name, birth_date=birth_date,
+                                client_type_id=client_type_to_set.id, client_type=client_type_to_set,
+                                address_id=new_address.id, address=new_address)
+            session.add(new_client)
+            session.commit()
 
     def remove_client(self, client_id):
         with self.sessionmaker() as session:
