@@ -15,16 +15,16 @@ class ClientManager:
             session.commit()
             session.refresh(new_address)
 
-            new_client_type = ReducedClientType(birth_date)
+            new_client_type = ReducedClientType()
 
             age = get_age(birth_date)
 
             if is_premium:
-                new_client_type = PremiumClientType(birth_date)
+                new_client_type = PremiumClientType()
             elif 5 < age < 65:
-                new_client_type = NormalClientType(birth_date)
+                new_client_type = NormalClientType()
 
-            client_type_res = session.query(ClientType).filter(ClientType.type == new_client_type.type).one()
+            client_type_res = session.query(ClientType).filter(ClientType.type == new_client_type.type).first()
 
             if not client_type_res:
                 session.add(new_client_type)

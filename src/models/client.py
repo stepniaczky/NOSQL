@@ -15,7 +15,6 @@ class Client(Base):
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     birth_date = Column(Date, nullable=False)
-    is_premium = Column(Boolean, nullable=False, default=False)
 
     client_type_id = Column(Integer, ForeignKey(f'{CLIENT_TYPES}.id'))
     client_type = relationship('ClientType', backref='client')
