@@ -3,13 +3,13 @@ from sqlalchemy import Column, Integer, String, Numeric, Date, Boolean, ForeignK
 from sqlalchemy.orm import relationship
 from typing import Any
 
-from src.constants.table_names import TableName
+from src.constants.table_names import CLIENT_TYPES, CLIENTS, ADDRESSES, MOVIES, TICKETS
 
 Base = declarative_base()
 
 
 class Address(Base):
-    __tablename__ = TableName.ADDRESSES
+    __tablename__ = ADDRESSES
 
     id = Column(Integer, primary_key=True, autoincrement='auto')
     city = Column(String, nullable=False)
@@ -31,13 +31,13 @@ class Address(Base):
 
 
 class ClientType(Base):
-    __tablename__ = TableName.CLIENT_TYPES
+    __tablename__ = CLIENT_TYPES
 
     id = Column(Integer, primary_key=True, autoincrement='auto')
     type = Column(String, nullable=False, default="normal")
 
     __mapper_args__ = {
-        'polymorphic_identity': 'client_types',
+        'polymorphic_identity': CLIENT_TYPES,
         'polymorphic_on': type
     }
 
@@ -70,17 +70,17 @@ class Premium(ClientType):
 
 
 class Client(Base):
-    __tablename__ = TableName.CLIENTS
+    __tablename__ = CLIENTS
 
     client_ID = Column(Integer, primary_key=True, nullable=False)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     birth_date = Column(Date, nullable=False)
     is_premium = Column(Boolean, nullable=False, default=False)
-    client_type_id = Column(Integer, ForeignKey('client_types.id'))
+    client_type_id = Column(Integer, ForeignKey(f'{CLIENT_TYPES}.id'))
     client_type = relationship('ClientType', backref='client')
 
-    address_id = Column(Integer, ForeignKey('addresses.id'))
+    address_id = Column(Integer, ForeignKey(f'{ADDRESSES}.id'))
     address = relationship('Address', backref='client')
 
     def __init__(self, first_name, last_name, birth_date, *args: Any, **kwargs: Any):
@@ -101,7 +101,7 @@ class Client(Base):
 
 
 class Movie(Base):
-    __tablename__ = TableName.MOVIES
+    __tablename__ = MOVIES
 
     id = Column(Integer, primary_key=True, autoincrement='auto')
     title = Column(String, nullable=False)
@@ -129,16 +129,16 @@ class Movie(Base):
 
 
 class Ticket(Base):
-    __tablename__ = TableName.TICKETS
+    __tablename__ = TICKETS
 
     id = Column(Integer, primary_key=True, autoincrement='auto')
     base_price = Column(Numeric, nullable=False)
     date = Column(Date, nullable=False)
 
-    client_id = Column(Integer, ForeignKey('clients.client_ID'))
+    client_id = Column(Integer, ForeignKey(f'{CLIENTS}.client_ID'))
     client = relationship('Client', backref='ticket')
 
-    movie_id = Column(Integer, ForeignKey('movies.id'))
+    movie_id = Column(Integer, ForeignKey(f'{MOVIES}.id'))
     movie = relationship('Movie', backref='ticket')
 
     def __init__(self, base_price, date, *args: Any, **kwargs: Any):
