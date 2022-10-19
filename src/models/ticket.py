@@ -1,3 +1,4 @@
+from datetime import datetime, date
 import sqlalchemy
 
 from typing import Any
@@ -14,9 +15,8 @@ class Ticket(Base):
 
     id = Column(Integer, primary_key=True, autoincrement='auto')
     base_price = Column(Numeric, nullable=False)
-    date = Column(Date, server_default=sqlalchemy.sql.func.now())
-    hour = Column(DateTime(timezone=True),
-                  server_default=sqlalchemy.sql.func.now())
+    date = Column(Date, nullable=False)
+    hour = Column(DateTime, nullable=False)
 
     client_id = Column(Integer, ForeignKey(f'{CLIENTS}.client_id'))
     client = relationship('Client', backref='ticket')
@@ -24,11 +24,14 @@ class Ticket(Base):
     movie_id = Column(Integer, ForeignKey(f'{MOVIES}.id'))
     movie = relationship('Movie', backref='ticket')
 
-    def __init__(self, base_price, date, *args: Any, **kwargs: Any):
+    def __init__(self, base_price, client_id = None, movie_id = None, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
 
         self.base_price = base_price
-        self.date = date
+        self.date = date.today().strftime("%d/%m/%Y")
+        self.hour = datetime.now().strftime("%H:%M:%S")
+        self.client_id = client_id
+        self.movie_id = movie_id
 
     def __repr__(self):
         return "<Ticket(base_price='%s', date='%s', client_id='%s', movie_id='%s')>" % (
