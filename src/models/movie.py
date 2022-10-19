@@ -11,7 +11,7 @@ class Movie(Base):
         'polymorphic_identity': 'movie',
     }
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement='auto')
     title = Column(String, nullable=False)
     genre = Column(String)
     min_age = Column(Integer)
@@ -26,3 +26,11 @@ class Movie(Base):
         self.min_age = min_age
         self.hall = hall
         self.free_slots = free_slots
+
+    def __repr__(self):
+        return "<Movie(title='%s', genre='%s', min_age='%s', hall='%s', free_slots='%s')>" % (
+            self.title,
+            self.genre,
+            self.min_age,
+            self.hall,
+            self.free_slots)

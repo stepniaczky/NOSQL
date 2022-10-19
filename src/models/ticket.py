@@ -12,7 +12,7 @@ class Ticket(Base):
         'polymorphic_identity': 'ticket',
     }
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement='auto')
     base_price = Column(Numeric, nullable=False)
     date = Column(Date, nullable=False)
 
@@ -27,3 +27,10 @@ class Ticket(Base):
 
         self.base_price = base_price
         self.date = date
+
+    def __repr__(self):
+        return "<Ticket(base_price='%s', date='%s', client_id='%s', movie_id='%s')>" % (
+            self.base_price,
+            self.date,
+            self.client_id,
+            self.movie_id)

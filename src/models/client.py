@@ -12,8 +12,8 @@ class Client(Base):
         'polymorphic_identity': 'client',
     }
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement='auto')
+    first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     birth_date = Column(Date, nullable=False)
     is_premium = Column(Boolean, nullable=False, default=False)
@@ -28,3 +28,12 @@ class Client(Base):
         self.name = name
         self.last_name = last_name
         self.birth_date = birth_date
+
+    def __repr__(self):
+        return "<Client(first_name='%s', last_name='%s', birth_date='%s', is_premium='%s', client_type='%', address_id='%')>" % (
+            self.first_name,
+            self.last_name,
+            self.birth_date,
+            self.is_premium,
+            self.client_type,
+            self.address_id)

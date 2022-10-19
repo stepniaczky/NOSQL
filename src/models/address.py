@@ -11,7 +11,7 @@ class Address(Base):
         'polymorphic_identity': 'address',
     }
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement='auto')
     city = Column(String, nullable=False)
     street = Column(String, nullable=False)
     number = Column(Numeric, nullable=False)
@@ -22,3 +22,9 @@ class Address(Base):
         self.city = city
         self.street = street
         self.number = number
+
+    def __repr__(self):
+        return "<Address(city='%s', street='%s', number='%s')>" % (
+            self.city,
+            self.street,
+            self.number)
