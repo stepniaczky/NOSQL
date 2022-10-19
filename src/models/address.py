@@ -26,3 +26,6 @@ class Address(Base):
             self.city,
             self.street,
             self.number)
+    
+    def __str__(self):
+        return f"City: {self.city}, Street: {self.street} {self.number} "

@@ -1,6 +1,7 @@
+from abc import abstractmethod
 from typing import Any
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Numeric
 
 from src.constants.table_names import CLIENT_TYPES
 from src.models import Base
@@ -25,12 +26,20 @@ class ClientType(Base):
     def __repr__(self):
         return "<Client(type='%s')>" % (
             self.type)
+        
+    @abstractmethod
+    def apply_discount():
+        pass
 
 
 class Reduced(ClientType):
     __mapper_args__ = {
         "polymorphic_identity": "reduced",
     }
+    
+    
+    def apply_discount(price):
+        return 0.5 * price
 
 
 class Normal(ClientType):
@@ -39,7 +48,13 @@ class Normal(ClientType):
     }
 
 
+    def apply_discount(price):
+        return price
+
 class Premium(ClientType):
     __mapper_args__ = {
         "polymorphic_identity": "premium",
     }
+    
+    def apply_discount(price):
+        return 0.1 * price

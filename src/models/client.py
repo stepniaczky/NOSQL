@@ -1,3 +1,4 @@
+from audioop import add
 from typing import Any
 
 from sqlalchemy import Column, Integer, String, Date, Boolean, ForeignKey
@@ -22,7 +23,7 @@ class Client(Base):
     address_id = Column(Integer, ForeignKey(f'{ADDRESSES}.id'))
     address = relationship('Address', backref='client')
 
-    def __init__(self, client_id, first_name, last_name, birth_date, is_premium, *args: Any, **kwargs: Any):
+    def __init__(self, client_id, first_name, last_name, birth_date, is_premium, client_type_id = None, address_id = None, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
 
         self.client_id = client_id
@@ -30,13 +31,17 @@ class Client(Base):
         self.last_name = last_name
         self.birth_date = birth_date
         self.is_premium = is_premium
+        self.client_type_id = client_type_id
+        self.address_id = address_id
+        
 
     def __repr__(self):
-        return "<Client(first_name='%s', last_name='%s', birth_date='%s', is_premium='%s', client_type='%s', " \
+        return "<Client(client_id='%s', first_name='%s', last_name='%s', birth_date='%s', is_premium='%s', client_type_id='%s', " \
                "address_id='%s')>" % (
+                   self.client_id,
                    self.first_name,
                    self.last_name,
                    self.birth_date,
                    self.is_premium,
-                   self.client_id,
+                   self.client_type_id,
                    self.address_id)
