@@ -1,6 +1,8 @@
+import sqlalchemy
+
 from typing import Any
 
-from sqlalchemy import Column, Numeric, Integer, ForeignKey, Date
+from sqlalchemy import Column, Numeric, Integer, ForeignKey, Date, DateTime
 from sqlalchemy.orm import relationship
 
 from src.constants.table_names import TICKETS, MOVIES, CLIENTS
@@ -12,7 +14,9 @@ class Ticket(Base):
 
     id = Column(Integer, primary_key=True, autoincrement='auto')
     base_price = Column(Numeric, nullable=False)
-    date = Column(Date, nullable=False)
+    date = Column(Date, server_default=sqlalchemy.sql.func.now())
+    hour = Column(DateTime(timezone=True),
+                  server_default=sqlalchemy.sql.func.now())
 
     client_id = Column(Integer, ForeignKey(f'{CLIENTS}.client_id'))
     client = relationship('Client', backref='ticket')
