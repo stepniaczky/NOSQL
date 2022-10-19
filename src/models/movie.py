@@ -2,11 +2,12 @@ from typing import Any
 
 from sqlalchemy import Integer, String, Column, ARRAY, null, Boolean
 
+from src.constants.table_names import MOVIES
 from src.models import Base
 
 
 class Movie(Base):
-    __tablename__ = 'movies'
+    __tablename__ = MOVIES
 
     id = Column(Integer, primary_key=True, autoincrement='auto')
     title = Column(String, nullable=False)

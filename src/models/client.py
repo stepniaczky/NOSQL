@@ -3,11 +3,12 @@ from typing import Any
 from sqlalchemy import Column, Integer, String, Date, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 
+from src.constants.table_names import CLIENTS, CLIENT_TYPES, ADDRESSES
 from src.models import Base
 
 
 class Client(Base):
-    __tablename__ = 'clients'
+    __tablename__ = CLIENTS
 
     client_id = Column(Integer, primary_key=True, nullable=False)
     first_name = Column(String, nullable=False)
@@ -15,10 +16,10 @@ class Client(Base):
     birth_date = Column(Date, nullable=False)
     is_premium = Column(Boolean, nullable=False, default=False)
 
-    client_type_id = Column(Integer, ForeignKey('client_types.id'))
+    client_type_id = Column(Integer, ForeignKey(f'{CLIENT_TYPES}.id'))
     client_type = relationship('ClientType', backref='client')
 
-    address_id = Column(Integer, ForeignKey('addresses.id'))
+    address_id = Column(Integer, ForeignKey(f'{ADDRESSES}.id'))
     address = relationship('Address', backref='client')
 
     def __init__(self, client_id, first_name, last_name, birth_date, is_premium, *args: Any, **kwargs: Any):
