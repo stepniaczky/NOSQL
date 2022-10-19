@@ -1,3 +1,5 @@
-from db import get_session
+from db import get_session, init_db, get_engine_from_env
 
-session = get_session()
+engine = get_engine_from_env()
+init_db(engine)
+session = get_session(engine)
