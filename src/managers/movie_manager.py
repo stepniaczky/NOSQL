@@ -36,3 +36,12 @@ class MovieManager:
                 return
 
             session.commit()
+
+    def get_movie(self, movie_id):
+        with self.session() as session:
+            movie = session.query(Movie).get(movie_id)
+
+            if movie is None:
+                print('Film o takim id nie istnieje!')
+
+            return movie
