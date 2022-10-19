@@ -1,14 +1,15 @@
 from sqlalchemy.orm import declarative_base
-
-from typing import Any
 from sqlalchemy import Column, Integer, String, Numeric, Date, Boolean, ForeignKey, null, ARRAY
 from sqlalchemy.orm import relationship
+from typing import Any
+
+from src.constants.table_names import TableName
 
 Base = declarative_base()
 
 
 class Address(Base):
-    __tablename__ = 'addresses'
+    __tablename__ = TableName.ADDRESSES
 
     id = Column(Integer, primary_key=True, autoincrement='auto')
     city = Column(String, nullable=False)
@@ -30,7 +31,7 @@ class Address(Base):
 
 
 class ClientType(Base):
-    __tablename__ = 'client_types'
+    __tablename__ = TableName.CLIENT_TYPES
 
     id = Column(Integer, primary_key=True, autoincrement='auto')
     type = Column(String, nullable=False, default="normal")
@@ -69,7 +70,7 @@ class Premium(ClientType):
 
 
 class Client(Base):
-    __tablename__ = 'clients'
+    __tablename__ = TableName.CLIENTS
 
     client_ID = Column(Integer, primary_key=True, nullable=False)
     first_name = Column(String, nullable=False)
@@ -100,7 +101,7 @@ class Client(Base):
 
 
 class Movie(Base):
-    __tablename__ = 'movies'
+    __tablename__ = TableName.MOVIES
 
     id = Column(Integer, primary_key=True, autoincrement='auto')
     title = Column(String, nullable=False)
@@ -128,7 +129,7 @@ class Movie(Base):
 
 
 class Ticket(Base):
-    __tablename__ = 'tickets'
+    __tablename__ = TableName.TICKETS
 
     id = Column(Integer, primary_key=True, autoincrement='auto')
     base_price = Column(Numeric, nullable=False)
