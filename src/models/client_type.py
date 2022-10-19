@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from datetime import date
 from typing import Any
 
 from sqlalchemy import Column, Integer, String, Numeric
@@ -11,17 +12,22 @@ class ClientType(Base):
     __tablename__ = CLIENT_TYPES
 
     id = Column(Integer, primary_key=True, autoincrement='auto')
-    type = Column(String, nullable=False, default="normal")
+    type = Column(String, nullable=False)
 
     __mapper_args__ = {
         'polymorphic_identity': CLIENT_TYPES,
         'polymorphic_on': type
     }
 
-    def __init__(self, type, *args: Any, **kwargs: Any):
+    def __init__(self, is_premium, birth_date, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-
-        self.type = type
+        if is_premium:
+            return Premium()
+        age = self.age(birth_date)
+        if age < 5 or age > 65:
+            return Reduced()
+        else:
+            return Normal()
 
     def __repr__(self):
         return "<Client(type='%s')>" % (
@@ -30,6 +36,12 @@ class ClientType(Base):
     @abstractmethod
     def apply_discount():
         pass
+    
+    @staticmethod
+    def age(birth_date):
+        today = date.today()
+        age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+        return age
 
 
 class Reduced(ClientType):
