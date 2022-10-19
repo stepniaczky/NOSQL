@@ -1,6 +1,6 @@
 from typing import Any
 
-from sqlalchemy import Integer, String, Column, ARRAY, null, Boolean
+from sqlalchemy import Integer, String, Column, ARRAY, null, Boolean, CheckConstraint
 
 from src.constants.table_names import MOVIES
 from src.models import Base
@@ -13,7 +13,7 @@ class Movie(Base):
     title = Column(String, nullable=False)
     genre = Column(String)
     min_age = Column(Integer)
-    hall = Column(Integer)
+    hall = Column(Integer, CheckConstraint('hall > 0 AND hall < 6'))
     free_slots = Column(ARRAY(Boolean))
 
     def __init__(self, title, genre=null, min_age=null, hall=null, free_slots=null, *args: Any, **kwargs: Any):
