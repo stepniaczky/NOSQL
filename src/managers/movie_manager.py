@@ -1,8 +1,4 @@
-from sqlalchemy import insert, select
-
 from src.models import Movie
-
-movies_table = Movie.__table__
 
 
 class MovieManager:
@@ -15,10 +11,10 @@ class MovieManager:
             return
 
         with self.session() as session:
-            select_response = session.execute(select(movies_table)).all()
+            movies = session.query(Movie).all()
 
-            for row in select_response:
-                if hall == row.hall:
+            for movie in movies:
+                if hall == movie.hall:
                     print('Podana sala jest zajęta!')
                     return
 
@@ -45,3 +41,9 @@ class MovieManager:
                 print('Film o takim id nie istnieje!')
 
             return movie
+
+    def get_all_movies(self):
+        with self.session() as session:
+            movies = session.query(Movie).all()
+            print(movies)
+            return movies

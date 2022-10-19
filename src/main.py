@@ -6,11 +6,3 @@ init_db(engine)
 session = get_session(engine)
 
 movieManager = MovieManager(session)
-
-movieManager.add_movie('Tytuł1', 'Gatunek', 12, 1, [True, True])
-movieManager.add_movie('Tytuł2', 'Gatunek', 12, 2, [True, True])
-movieManager.add_movie('Tytuł3', 'Gatunek', 12, 1, [True, True])
-
-movieManager.delete_movie(2)
-
-movieManager.get_movie(2)
