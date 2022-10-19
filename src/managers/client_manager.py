@@ -2,27 +2,16 @@ from src.models import Client, Address
 
 
 class ClientManager:
-    user_table = Client.__tablename__
-
     def __init__(self, sessionmaker):
         self.sessionmaker = sessionmaker
 
-    def add_client(self, client_id, first_name, last_name, birth_date, is_premium, city, street, number):
-        # cliet_type = ClientType(birth_date)
-        # address_id = None
-        print("CFFFFFFFFFFFFFFFFFFF")
-
+    def add_client(self, pesel, first_name, last_name, birth_date, is_premium, city, street, number):
         with self.sessionmaker() as session:
-            addresses = session.query(Address).all()
-            print(addresses)
-            address = Address(city=city, street=street, number=number)
-            session.add(address)
+            new_address = Address(city=city, street=street, number=number)
+
+            session.add(new_address)
             session.commit()
-            # session.flush()
-            # session.refresh()
-            # address_id = address.id
-            # except Exception as e:
-            #     session.rollback()
+            session.refresh(new_address)
 
         # client = Client(client_id, first_name, last_name, birth_date, is_premium, )
 

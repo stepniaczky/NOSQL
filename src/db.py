@@ -1,6 +1,5 @@
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm.session import Session
 from sqlalchemy_utils import database_exists, create_database
 from dotenv import dotenv_values
 from pathlib import Path
@@ -24,6 +23,7 @@ def get_engine(driver, user, passwd, host, port, db):
 def get_engine_from_env():
     config = dotenv_values(CONFIG_PATH)
     keys = ['DRIVER', 'USER', 'PASSWD', 'HOST', 'PORT', 'DB']
+
     if not all([key in keys for key in config.keys()]):
         raise Exception('Bad config file')
 
@@ -33,20 +33,6 @@ def get_engine_from_env():
                       config['HOST'],
                       config['PORT'],
                       config['DB'])
-
-
-def get_test_engine_from_env():
-    config = dotenv_values(CONFIG_PATH)
-    keys = ['DRIVER', 'USER', 'PASSWD', 'HOST', 'PORT_TEST', 'DB_TEST']
-    if not all([key in keys for key in config.keys()]):
-        raise Exception('Bad config file')
-
-    return get_engine(config['DRIVER'],
-                      config['USER'],
-                      config['PASSWD'],
-                      config['HOST'],
-                      config['PORT_TEST'],
-                      config['DB_TEST'])
 
 
 def get_session(engine) -> sessionmaker:

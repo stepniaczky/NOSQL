@@ -18,7 +18,7 @@ class Ticket(Base):
     date = Column(Date, nullable=False)
     hour = Column(DateTime, nullable=False)
 
-    client_id = Column(Integer, ForeignKey(f'{CLIENTS}.client_id'))
+    client_id = Column(Integer, ForeignKey(f'{CLIENTS}.id'))
     client = relationship('Client', backref='ticket')
 
     movie_id = Column(Integer, ForeignKey(f'{MOVIES}.id'))

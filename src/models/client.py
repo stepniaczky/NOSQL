@@ -10,7 +10,7 @@ from src.models import Base
 class Client(Base):
     __tablename__ = CLIENTS
 
-    client_id = Column(Integer, primary_key=True, autoincrement='auto')
+    id = Column(Integer, primary_key=True, autoincrement='auto')
     pesel = Column(Integer, nullable=False)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
@@ -23,7 +23,7 @@ class Client(Base):
     address_id = Column(Integer, ForeignKey(f'{ADDRESSES}.id'))
     address = relationship('Address', backref='client')
 
-    def __init__(self, pesel, first_name, last_name, birth_date, is_premium, *args: Any, **kwargs: Any):
+    def __init__(self, pesel, first_name, last_name, birth_date, is_premium=False, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
 
         self.pesel = pesel

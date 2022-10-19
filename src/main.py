@@ -1,7 +1,6 @@
 from datetime import date
 
 from db import get_session, init_db, get_engine_from_env
-from src.managers.movie_manager import MovieManager
 from src.managers.client_manager import ClientManager
 
 engine = get_engine_from_env()
@@ -12,4 +11,4 @@ sessionmaker = get_session(engine)
 # movieManager.add_movie()
 
 client_manager = ClientManager(sessionmaker)
-client_manager.add_client(111, "Mikolaj", "Stepniak", date(2001, 11, 27), True, "Lodz", "Ketlinga", 13)
+client_manager.add_client(11122233344, "Imie", "Nazwisko", date(2001, 1, 11), True, "Lodz", "Ketlinga", 13)
