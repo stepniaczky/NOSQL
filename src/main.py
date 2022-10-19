@@ -8,7 +8,7 @@ engine = get_engine_from_env()
 init_db(engine)
 sessionmaker = get_session(engine)
 
-# movieManager = MovieManager(session)
+# movieManager = MovieManager(sessionmaker)
 # movieManager.add_movie()
 
 client_manager = ClientManager(sessionmaker)
