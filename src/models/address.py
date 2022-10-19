@@ -1,12 +1,12 @@
 from typing import Any
+
 from sqlalchemy import Column, Integer, String, Numeric
 
-from src.constants.table_names import ADDRESSES
-from src.models import Base
+from src.models.base import Base
 
 
 class Address(Base):
-    __tablename__ = ADDRESSES
+    __tablename__ = 'addresses'
 
     id = Column(Integer, primary_key=True, autoincrement='auto')
     city = Column(String, nullable=False)

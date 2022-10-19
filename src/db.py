@@ -5,7 +5,7 @@ from sqlalchemy_utils import database_exists, create_database
 from dotenv import dotenv_values
 from pathlib import Path
 
-from models import Base
+from src.models import Base
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 CONFIG_PATH = ROOT_DIR / '.env'
