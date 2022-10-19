@@ -45,5 +45,4 @@ class MovieManager:
     def get_all_movies(self):
         with self.session() as session:
             movies = session.query(Movie).all()
-            print(movies)
             return movies

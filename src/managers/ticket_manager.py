@@ -13,3 +13,8 @@ class TicketManager:
                 print('Film o takim id nie istnieje!')
 
             return ticket
+
+    def get_all_tickets(self):
+        with self.session() as session:
+            tickets = session.query(Ticket).all()
+            return tickets
