@@ -35,7 +35,7 @@ def get_engine_from_env():
                       config['DB'])
 
 
-def get_session(engine) -> Session:
+def get_session(engine) -> sessionmaker:
     return sessionmaker(bind=engine)
 
 
