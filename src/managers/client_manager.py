@@ -50,9 +50,13 @@ class ClientManager:
     def get_client(self, client_id):
         with self.sessionmaker() as session:
             client = session.query(Client).get(client_id)
+
+            if client is None:
+                print('Klient o takim id nie istnieje!')
+
             return client
 
     def get_all_clients(self):
         with self.sessionmaker() as session:
-            response: List[Row] = session.query(Client).all()
-            return response
+            clients = session.query(Client).all()
+            return clients
