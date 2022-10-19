@@ -1,7 +1,4 @@
-from typing import List
 from src.models import Client, Address
-
-from sqlalchemy.engine import Row
 
 
 class ClientManager:
@@ -40,12 +37,13 @@ class ClientManager:
 
     def remove_client(self, client_id):
         with self.sessionmaker() as session:
-            try:
-                obj = Client.query.filter_by(client_id=client_id).one()
-                session.delete(obj)
-                session.commit()
-            except Exception as e:
-                session.rollback()
+            delete_response = session.query(Client).filter(Client.id == client_id).delete()
+
+            if not delete_response:
+                print('Klient o takim id nie istnieje!')
+                return
+
+            session.commit()
 
     def get_client(self, client_id):
         with self.sessionmaker() as session:
