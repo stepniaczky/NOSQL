@@ -1,4 +1,3 @@
-from audioop import add
 from typing import Any
 
 from sqlalchemy import Column, Integer, String, Date, Boolean, ForeignKey
@@ -11,7 +10,8 @@ from src.models import Base
 class Client(Base):
     __tablename__ = CLIENTS
 
-    client_id = Column(Integer, primary_key=True, nullable=False)
+    client_id = Column(Integer, primary_key=True, autoincrement='auto')
+    pesel = Column(Integer, nullable=False)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     birth_date = Column(Date, nullable=False)
