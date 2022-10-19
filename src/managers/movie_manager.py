@@ -1,23 +1,27 @@
-from typing import List
-
-from sqlalchemy import select
-from sqlalchemy.engine import Row
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import insert, select
 
 from src.models import Movie
 
+movies_table = Movie.__table__
+
 
 class MovieManager:
-    halls = [True for i in range(5)]
-
     def __init__(self, session):
-        self.session: sessionmaker = session
+        self.session = session
 
-    def add_movie(self):
+    def add_movie(self, title, genre, min_age, hall, free_slots):
+        if not 1 <= hall <= 5:
+            print('Błędny numer sali')
+            return
+
         with self.session() as session:
-            movies_table = Movie.__table__
-            query: list[Row] = session.execute(select(movies_table)).all()
-            print(query)
+            select_response = session.execute(select(movies_table)).all()
 
-        if not any(self.halls):
-            print('Nie ma wolnych sal!')
+            for row in select_response:
+                if hall == row.hall:
+                    print('Podana sala jest zajęta')
+                    return
+
+            new_movie = Movie(title=title, genre=genre, min_age=min_age, hall=hall, free_slots=free_slots)
+            session.add(new_movie)
+            session.commit()
