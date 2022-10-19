@@ -35,6 +35,20 @@ def get_engine_from_env():
                       config['DB'])
 
 
+def get_test_engine_from_env():
+    config = dotenv_values(CONFIG_PATH)
+    keys = ['DRIVER', 'USER', 'PASSWD', 'HOST', 'PORT_TEST', 'DB_TEST']
+    if not all([key in keys for key in config.keys()]):
+        raise Exception('Bad config file')
+
+    return get_engine(config['DRIVER'],
+                      config['USER'],
+                      config['PASSWD'],
+                      config['HOST'],
+                      config['PORT_TEST'],
+                      config['DB_TEST'])
+
+
 def get_session(engine) -> sessionmaker:
     return sessionmaker(bind=engine)
 
