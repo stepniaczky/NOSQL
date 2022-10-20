@@ -13,10 +13,9 @@ from src.models import Base
 class Ticket(Base):
     __tablename__ = TICKETS
 
-    id = Column(Integer, primary_key=True, autoincrement='auto')
+    id = Column(Integer, primary_key=True)
     base_price = Column(Numeric, nullable=False)
     date = Column(Date, nullable=False)
-    hour = Column(DateTime, nullable=False)
 
     client_id = Column(Integer, ForeignKey(f'{CLIENTS}.id'))
     client = relationship('Client', backref='ticket')
@@ -24,12 +23,12 @@ class Ticket(Base):
     movie_id = Column(Integer, ForeignKey(f'{MOVIES}.id'))
     movie = relationship('Movie', backref='ticket')
 
-    def __init__(self, base_price, client_id = None, movie_id = None, *args: Any, **kwargs: Any):
+    def __init__(self, id, base_price, client_id=None, movie_id=None, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
 
+        self.id = id
         self.base_price = base_price
-        self.date = date.today().strftime("%d/%m/%Y")
-        self.hour = datetime.now().strftime("%H:%M:%S")
+        self.date = date.today()
         self.client_id = client_id
         self.movie_id = movie_id
 

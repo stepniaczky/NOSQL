@@ -9,16 +9,17 @@ from src.models import Base
 class Movie(Base):
     __tablename__ = MOVIES
 
-    id = Column(Integer, primary_key=True, autoincrement='auto')
+    id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
     genre = Column(String)
     min_age = Column(Integer)
     hall = Column(Integer, CheckConstraint('hall > 0 AND hall < 6'))
     free_slots = Column(ARRAY(Boolean))
 
-    def __init__(self, title, genre=null, min_age=null, hall=null, free_slots=null, *args: Any, **kwargs: Any):
+    def __init__(self, id, title, genre=null, min_age=null, hall=null, free_slots=null, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
 
+        self.id = id
         self.title = title
         self.genre = genre
         self.min_age = min_age

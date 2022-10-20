@@ -1,4 +1,4 @@
-from src.models import Movie
+from src.models import Movie, Ticket
 
 
 class MovieManager:
@@ -18,13 +18,26 @@ class MovieManager:
                     print('Podana sala jest zajęta!')
                     return
 
-            new_movie = Movie(title=title, genre=genre, min_age=min_age, hall=hall, free_slots=free_slots)
+            id = 1
+            while True:
+                if session.query(Movie).get(id) is None:
+                    break
+                id += 1
+
+            slots = [True for i in range(free_slots)]
+            new_movie = Movie(id=id, title=title, genre=genre,
+                              min_age=min_age, hall=hall, free_slots=slots)
 
             session.add(new_movie)
             session.commit()
 
     def delete_movie(self, movie_id):
         with self.session() as session:
+            ticket = session.query(Ticket).filter(
+                Ticket.movie_id == movie_id).first()
+            if ticket is not None:
+                print('Nie można usunąć filmu, który jest na bilecie!')
+                return
             res = session.query(Movie).filter(Movie.id == movie_id).delete()
 
             if not res:

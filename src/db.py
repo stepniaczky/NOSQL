@@ -16,7 +16,7 @@ def get_engine(driver, user, passwd, host, port, db):
         create_database(url)
 
     engine = create_engine(
-        url, pool_size=50, isolation_level="SERIALIZABLE", echo=True)
+        url, pool_size=50, isolation_level="SERIALIZABLE", echo=False)
     return engine
 
 
