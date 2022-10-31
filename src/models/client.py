@@ -1,46 +1,32 @@
-from typing import Any
+import uuid
 
-from sqlalchemy import Column, Integer, String, Date, Boolean, ForeignKey
-from sqlalchemy.orm import relationship
+from dataclasses import dataclass, field
+from datetime import datetime
 
-from src.constants.table_names import CLIENTS, CLIENT_TYPES, ADDRESSES
-from src.models import Base
+from src.models.address import Address
+from src.models.client_type import NormalClientType, ReducedClientType, PremiumClientType, ClientType
 
-
-class Client(Base):
-    __tablename__ = CLIENTS
-
-    id = Column(Integer, primary_key=True)
-    pesel = Column(String, nullable=False)
-    first_name = Column(String, nullable=False)
-    last_name = Column(String, nullable=False)
-    birth_date = Column(Date, nullable=False)
-
-    client_type_id = Column(Integer, ForeignKey(f'{CLIENT_TYPES}.id'))
-    client_type = relationship('ClientType', backref='client')
-
-    address_id = Column(Integer, ForeignKey(f'{ADDRESSES}.id'))
-    address = relationship('Address', backref='client')
-
-    def __init__(self, id, pesel, first_name, last_name, birth_date, client_type_id, client_type, address_id, address, *args: Any, **kwargs: Any):
-        super().__init__(*args, **kwargs)
-
-        self.id = id
-        self.pesel = pesel
-        self.first_name = first_name
-        self.last_name = last_name
-        self.birth_date = birth_date
-        self.client_type_id = client_type_id
-        self.client_type = client_type
-        self.address_id = address_id
-        self.address = address
-
-    def __repr__(self):
-        return "<Client(client_id='%s', first_name='%s', last_name='%s', birth_date='%s', client_type_id='%s', " \
-               "address_id='%s')>" % (
-                   self.id,
-                   self.first_name,
-                   self.last_name,
-                   self.birth_date,
-                   self.client_type_id,
-                   self.address_id)
+@dataclass
+class Client:
+    pesel: str
+    first_name: str
+    last_name: str
+    birth_date: datetime.date
+    client_type: ClientType
+    address: Address
+    id: uuid.uuid4 = field(default_factory=uuid.uuid4)
+    
+    def __post_init__(self):
+        self.id = uuid.UUID(self.id) if isinstance(self.id, str) else self.id
+        self.birth_date = datetime.strptime(self.birth_date, '%d/%m/%Y').date() 
+        self.client_type = self.client_type_obj(**self.client_type) if isinstance(self.client_type, dict) else self.client_type
+        self.address = Address(**self.address) if isinstance(self.address, dict) else self.address
+        
+    @staticmethod
+    def client_type_obj(**_dict):
+        if _dict['type'] == 'normal':
+            return NormalClientType()
+        if _dict['type'] == 'reduced':
+            return ReducedClientType()
+        else:
+            return PremiumClientType()

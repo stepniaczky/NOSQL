@@ -1,35 +1,17 @@
-from typing import Any
+import uuid
 
-from sqlalchemy import Integer, String, Column, ARRAY, null, Boolean, CheckConstraint
+from dataclasses import dataclass, field
+from typing import List
 
-from src.constants.table_names import MOVIES
-from src.models import Base
+@dataclass
+class Movie:
+    title: str
+    genre: str
+    min_age: int
+    hall: int
+    free_slots: List[bool]
+    id: uuid.uuid4 = field(default_factory=uuid.uuid4)
 
-
-class Movie(Base):
-    __tablename__ = MOVIES
-
-    id = Column(Integer, primary_key=True)
-    title = Column(String, nullable=False)
-    genre = Column(String)
-    min_age = Column(Integer)
-    hall = Column(Integer, CheckConstraint('hall > 0 AND hall < 6'))
-    free_slots = Column(ARRAY(Boolean))
-
-    def __init__(self, id, title, genre=null, min_age=null, hall=null, free_slots=null, *args: Any, **kwargs: Any):
-        super().__init__(*args, **kwargs)
-
-        self.id = id
-        self.title = title
-        self.genre = genre
-        self.min_age = min_age
-        self.hall = hall
-        self.free_slots = free_slots
-
-    def __repr__(self):
-        return "<Movie(title='%s', genre='%s', min_age='%s', hall='%s', free_slots='%s')>" % (
-            self.title,
-            self.genre,
-            self.min_age,
-            self.hall,
-            self.free_slots)
+    def __post_init__(self):
+        self.id = uuid.uuid4() if isinstance(self.id, str) else self.id
+        self.free_slots = [True] * self.free_slots
