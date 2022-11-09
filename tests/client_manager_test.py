@@ -1,21 +1,18 @@
 import unittest
 import os
-from datetime import date
 
-os.chdir("..")
 from src.db import config
-
-config('.env.test')
-
 from src.managers.client_manager import ClientManager
 
+os.chdir("..")
+config('.env.test')
 client_manager = ClientManager()
 
 
 class ClientManagerTest(unittest.TestCase):
     def setUp(self) -> None:
         client = client_manager.get_client(pesel="05885030733")
-        if client != None:
+        if client is not None:
             client_manager.remove_client(_id=client._id)
             client = client_manager.get_client(pesel="05885030733")
             self.assertIsNone(client)

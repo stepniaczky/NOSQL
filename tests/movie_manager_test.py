@@ -1,18 +1,41 @@
 import unittest
+import os
 
-from src.db import get_engine_from_env, init_db, get_session
+from src.db import config
+from src.managers.movie_manager import MovieManager
 
-engine = get_engine_from_env()
-init_db(engine)
-session = get_session(engine)
+os.chdir("..")
+config('.env.test')
+movie_manager = MovieManager()
 
 
-class AddMovieTest(unittest.TestCase):
-    def setUp(self):
-        self.xd = 'xd'
+class MovieManagerTest(unittest.TestCase):
+    def setUp(self) -> None:
+        movie = movie_manager.get_movie(hall=1)
+        if movie is not None:
+            movie_manager.delete_movie(_id=movie._id)
+            movie = movie_manager.get_movie(_id=movie._id)
+            self.assertIsNone(movie)
 
-    def test_something(self):
-        self.assertEqual(True, False)  # add assertion here
+    def test_movie_add(self):
+        movie = movie_manager.get_movie(hall=1)
+        self.assertIsNone(movie)
+
+        movie_manager.add_movie('Pulp Fiction', 'Dramat', 18, 1, 10)
+
+        movie = movie_manager.get_movie(hall=1)
+        self.assertIsNotNone(movie)
+
+        movie_manager.delete_movie(_id=movie._id)
+
+    def test_remove_movie(self):
+        movie_manager.add_movie('Pulp Fiction', 'Dramat', 18, 1, 10)
+        movie = movie_manager.get_movie(hall=1)
+        self.assertIsNotNone(movie)
+
+        movie_manager.delete_movie(_id=movie._id)
+        movie = movie_manager.get_movie(hall=1)
+        self.assertIsNone(movie)
 
 
 if __name__ == '__main__':
