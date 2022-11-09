@@ -3,11 +3,10 @@ from dotenv import dotenv_values
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
-CONFIG_PATH = ROOT_DIR / '.env'
 
-def config():
+def config(env_name = '.env'):
     global CONFIG
-    CONFIG = dotenv_values(CONFIG_PATH)
+    CONFIG = dotenv_values(ROOT_DIR / env_name)
     keys = ['DRIVER', 'USER', 'PASSWD', 'HOST', 'PORT', 'DB']
 
     if not all([key in keys for key in CONFIG.keys()]):
