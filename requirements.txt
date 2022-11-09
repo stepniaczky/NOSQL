@@ -1,4 +1,2 @@
 python-dotenv
-SQLAlchemy
-SQLAlchemy-Utils
-psycopg2
+pymongo
