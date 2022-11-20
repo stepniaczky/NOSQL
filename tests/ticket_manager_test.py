@@ -6,7 +6,6 @@ from src.managers.ticket_manager import TicketManager
 from src.managers.client_manager import ClientManager
 from src.managers.movie_manager import MovieManager
 
-os.chdir("..")
 config('.env.test')
 
 ticket_manager = TicketManager()

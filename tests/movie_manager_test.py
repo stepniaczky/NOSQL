@@ -4,7 +4,6 @@ import os
 from src.db import config
 from src.managers.movie_manager import MovieManager
 
-os.chdir("..")
 config('.env.test')
 movie_manager = MovieManager()
 

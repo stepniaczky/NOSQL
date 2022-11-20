@@ -4,7 +4,6 @@ import os
 from src.db import config
 from src.managers.client_manager import ClientManager
 
-os.chdir("..")
 config('.env.test')
 client_manager = ClientManager()
 
