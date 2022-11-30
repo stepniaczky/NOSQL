@@ -1,20 +1,18 @@
 import uuid
+import json
+import asyncio
 
 from typing import List
 from src.models import Client, Address, PremiumClientType, NormalClientType, ReducedClientType
-from src.db import get_collection
+from src.db import get_collection, hash_prefix, get_redis_client
 
 class ClientManager:
+    prefix = hash_prefix['client']
         
     @staticmethod
     def add_client(pesel, first_name, last_name, birth_date, is_premium, city, street, number) -> None:
         if len(pesel) != 11:
             print("Pesel musi mieć 11 znaków!")
-            return
-
-        client_collection = get_collection('clients')
-        if client_collection.find_one({'pesel': pesel}) is not None:
-            print('Klient o takim peselu już istnieje!')
             return
 
         address = Address(city=city, street=street, number=number)
@@ -28,9 +26,27 @@ class ClientManager:
             client_type = ReducedClientType()
 
         client = Client(pesel=pesel, first_name=first_name, last_name=last_name, birth_date=birth_date,
-                            client_type=client_type, address=address, is_premium=is_premium)
+                        client_type=client_type, address=address, is_premium=is_premium)
+
+        # Check cache
+        cached = ClientManager.get_cached()
+        for cached_client in cached:
+            if cached_client['pesel'] == client.pesel:
+                print('Klient o takim peselu już istnieje!')
+                return
+
+        client_collection = get_collection('clients')
+        if client_collection.find_one({'pesel': pesel}) is not None:
+            print('Klient o takim peselu już istnieje!')
+            return
 
         client_collection.insert_one(client.__dict__())
+
+        # Add to cache and invalidate
+        redis_client = get_redis_client()
+        redis_client.set(ClientManager.prefix + str(client.pesel), json.dumps(client.__dict__()))
+        ClientManager.invalidate_cache()
+
         print('Pomyslnie dodano klienta o UUID: {}'.format(client._id))
     
     @staticmethod
@@ -70,7 +86,12 @@ class ClientManager:
         if '_id' in query.keys():
             query['_id'] = str(query['_id']) if isinstance(query['_id'], uuid.UUID) else query['_id']
         
-        
+        # Cache
+        redis_client = get_redis_client()
+        cached_client = redis_client.get(f'{ClientManager.prefix}{query["_id"]}')
+        if cached_client is not None:
+            return Client(**cached_client)
+
         client_collection = get_collection('clients')
         res_list = list(client_collection.find(query))
         
@@ -136,4 +157,17 @@ class ClientManager:
             else:
                 client_type = ReducedClientType() if Client.get_age(client['birth_date']) < 5 or Client.get_age(client['birth_date']) > 65 else NormalClientType()
                 ClientManager.update_client(_id, {'client_type': client_type.__dict__, 'is_premium': is_premium})
+
+    @staticmethod
+    async def invalidate_cache(delay_in_seconds=60):
+        redis_client = get_redis_client()
+        await asyncio.sleep(delay_in_seconds)
+        redis_client.flushdb()
+
+    @staticmethod
+    def get_cached():
+        redis_client = get_redis_client()
+        keys = redis_client.keys(f'{ClientManager.prefix}*')
+        clients = [json.loads(redis_client.get(key)) for key in keys]
+        return clients
             
