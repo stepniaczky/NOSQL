@@ -12,6 +12,7 @@ def add_client_decorator(func):
         if client is not None:
             redis_client.set(f'Client:{client._id}', json.dumps(client.__dict__()), ex=cache_expire_time)
             print('Dodano klienta do cache.')
+            return client
         else:
             print('Nie dodano klienta do cache')
 
@@ -30,6 +31,19 @@ def get_client_decorator(func):
                 return Client(**cache_client)
 
         print('Nie pobrano klienta z cache')
-        func(**query)
+        return func(**query)
+
+    return inner
+
+
+def remove_client_decorator(func):
+    def inner(*args, **kwargs):
+        redis_client = get_redis_client()
+        removed_client_id = func(*args, **kwargs)
+        if removed_client_id is not None:
+            redis_client.delete(f'Client:{removed_client_id}')
+            print('Usunięto klienta z cache.')
+        else:
+            print('Nie usunięto klienta z cache')
 
     return inner

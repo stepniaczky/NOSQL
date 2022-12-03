@@ -4,7 +4,7 @@ import asyncio
 
 from typing import List
 
-from src.decorators.client_manager import add_client_decorator, get_client_decorator
+from src.decorators.client_manager import add_client_decorator, get_client_decorator, remove_client_decorator
 from src.models import Client, Address, PremiumClientType, NormalClientType, ReducedClientType
 from src.db import get_collection, hash_prefix, get_redis_client
 
@@ -40,7 +40,8 @@ class ClientManager:
         return client
 
     @staticmethod
-    def remove_client(_id) -> None:
+    @remove_client_decorator
+    def remove_client(_id):
         _id = str(_id) if isinstance(_id, uuid.UUID) else _id
         client_collection = get_collection('clients')
         client = client_collection.find_one({'_id': _id})
@@ -56,6 +57,7 @@ class ClientManager:
 
         client_collection.delete_one({'_id': _id})
         print('Pomyslnie usunieto klienta o UUID: {}'.format(_id))
+        return _id
 
     @staticmethod
     @get_client_decorator
@@ -143,16 +145,3 @@ class ClientManager:
                 client_type = ReducedClientType() if Client.get_age(client['birth_date']) < 5 or Client.get_age(
                     client['birth_date']) > 65 else NormalClientType()
                 ClientManager.update_client(_id, {'client_type': client_type.__dict__, 'is_premium': is_premium})
-
-    @staticmethod
-    async def invalidate_cache(delay_in_seconds=60):
-        redis_client = get_redis_client()
-        await asyncio.sleep(delay_in_seconds)
-        redis_client.flushdb()
-
-    @staticmethod
-    def get_cached():
-        redis_client = get_redis_client()
-        keys = redis_client.keys(f'{ClientManager.prefix}*')
-        clients = [json.loads(redis_client.get(key)) for key in keys]
-        return clients
