@@ -4,7 +4,7 @@ import asyncio
 
 from typing import List
 
-from src.decorators.client_manager import add_client_decorator
+from src.decorators.client_manager import add_client_decorator, get_client_decorator
 from src.models import Client, Address, PremiumClientType, NormalClientType, ReducedClientType
 from src.db import get_collection, hash_prefix, get_redis_client
 
@@ -58,6 +58,7 @@ class ClientManager:
         print('Pomyslnie usunieto klienta o UUID: {}'.format(_id))
 
     @staticmethod
+    @get_client_decorator
     def get_client(**query) -> Client or None:
         if not set(query.keys()).issubset(
                 set(['_id', 'pesel', 'first_name', 'last_name', 'birth_date', 'client_type', 'address', 'is_premium'])):
@@ -76,12 +77,6 @@ class ClientManager:
 
         if '_id' in query.keys():
             query['_id'] = str(query['_id']) if isinstance(query['_id'], uuid.UUID) else query['_id']
-
-        # Cache
-        redis_client = get_redis_client()
-        cached_client = redis_client.get(f'{ClientManager.prefix}{query["_id"]}')
-        if cached_client is not None:
-            return Client(**cached_client)
 
         client_collection = get_collection('clients')
         res_list = list(client_collection.find(query))
