@@ -1,5 +1,12 @@
-from src.db import get_session, init_db, get_engine_from_env
+from src.db import config
+from src.managers.client_manager import ClientManager
 
-engine = get_engine_from_env()
-# init_db(engine)
-session = get_session(engine)
+
+def main():
+    config()
+    client_manager = ClientManager()
+    client_manager.add_client('99999999991', 'Huan', 'Pablo', '5/5/2020', False, 'Warszawa', 'Javowa', '1')
+
+
+if __name__ == '__main__':
+    main()
