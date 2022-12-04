@@ -4,7 +4,8 @@ import asyncio
 
 from typing import List
 
-from src.decorators.client_manager import add_client_decorator, get_client_decorator, remove_client_decorator
+from src.decorators.client_manager import add_client_decorator, get_client_decorator, remove_client_decorator, \
+    update_client_decorator
 from src.models import Client, Address, PremiumClientType, NormalClientType, ReducedClientType
 from src.db import get_collection, hash_prefix, get_redis_client
 
@@ -111,10 +112,12 @@ class ClientManager:
         return client_collection.count_documents({})
 
     @staticmethod
+    @update_client_decorator
     def update_client(_id, new_value) -> None:
         client_collection = get_collection('clients')
         client = client_collection.update_one({'_id': _id}, {'$set': new_value})
         print('Pomyslnie zaaktualizowane dane klienta o UUID: {}'.format(_id))
+        return client
 
     @staticmethod
     def update_client_address(_id, city, street, number) -> None:

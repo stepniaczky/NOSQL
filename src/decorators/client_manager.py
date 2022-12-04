@@ -46,4 +46,19 @@ def remove_client_decorator(func):
         else:
             print('Nie usunięto klienta z cache')
 
+    return
+
+
+def update_client_decorator(func):
+    def inner(*args, **kwargs):
+        redis_client = get_redis_client()
+        client = func(*args, **kwargs)
+        if client is not None:
+            # redis_client.delete(f'Client:{client._id}')
+            redis_client.set(f'Client:{client._id}', json.dumps(client.__dict__()), ex=cache_expire_time)
+            print('Zaktualizowno klienta w cache.')
+            return client
+        else:
+            print('Nie zaktualizowano klienta w cache')
+
     return inner
