@@ -1,7 +1,7 @@
 import unittest
 import os
 
-from src.db import config
+from src.db import config, get_redis_client
 from src.managers.client_manager import ClientManager
 
 config('.env.test')
@@ -47,6 +47,20 @@ class ClientManagerTest(unittest.TestCase):
         self.assertTrue(client.is_premium)
 
         client_manager.remove_client(client._id)
+
+    def test_add_client_cache(self):
+        client = client_manager.get_client(pesel="05885030733")
+        self.assertIsNone(client)
+
+        client_manager.add_client('05885030733', 'Jacek', 'Pablo', '1/1/2020', False, 'Warszawa', 'Javowa', '1')
+
+        client = client_manager.get_client(pesel="05885030733")
+        self.assertIsNotNone(client)
+
+        client_from_cache = get_redis_client()
+        self.assertIsNotNone(client_from_cache)
+
+        client_manager.remove_client(_id=client._id)
 
 
 if __name__ == '__main__':
