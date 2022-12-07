@@ -57,10 +57,26 @@ class ClientManagerTest(unittest.TestCase):
         client = client_manager.get_client(pesel="05885030733")
         self.assertIsNotNone(client)
 
-        client_from_cache = get_redis_client()
-        self.assertIsNotNone(client_from_cache)
+        redis_client = get_redis_client()
+        cache_client = redis_client.get(f"Client:{client._id}")
+        self.assertIsNotNone(cache_client)
 
         client_manager.remove_client(_id=client._id)
+
+    def test_remove_client_cache(self):
+        client_manager.add_client('05885030733', 'Jacek', 'Pablo', '1/1/2020', False, 'Warszawa', 'Javowa', '1')
+        client = client_manager.get_client(pesel="05885030733")
+        self.assertIsNotNone(client)
+
+        client_id = client._id
+
+        client_manager.remove_client(client._id)
+        client = client_manager.get_client(pesel="05885030733")
+        self.assertIsNone(client)
+
+        redis_client = get_redis_client()
+        cache_client = redis_client.get(f"Client:{client_id}")
+        self.assertIsNone(cache_client)
 
 
 if __name__ == '__main__':
