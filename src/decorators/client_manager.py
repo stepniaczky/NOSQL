@@ -1,7 +1,7 @@
 import json
 
 from src.config import cache_expire_time
-from src.db import get_redis_client, config
+from src.db import get_redis_client, config, get_collection
 from src.models import Client
 
 
@@ -12,9 +12,9 @@ def add_client_decorator(func):
         if client is not None:
             redis_client.set(f'Client:{client._id}', json.dumps(client.__dict__()), ex=cache_expire_time)
             print('Dodano klienta do cache.')
-            return client
         else:
             print('Nie dodano klienta do cache')
+        return client
 
     return inner
 
@@ -46,18 +46,19 @@ def remove_client_decorator(func):
         else:
             print('Nie usunięto klienta z cache')
 
-    return
+    return inner
 
 
 def update_client_decorator(func):
     def inner(*args, **kwargs):
         redis_client = get_redis_client()
-        client = func(*args, **kwargs)
+        _id = func(*args, **kwargs)
+        client_collection = get_collection('clients')
+        client_mongo = client_collection.find_one({'_id': _id})
+        client = Client(**client_mongo)
         if client is not None:
-            # redis_client.delete(f'Client:{client._id}')
             redis_client.set(f'Client:{client._id}', json.dumps(client.__dict__()), ex=cache_expire_time)
             print('Zaktualizowno klienta w cache.')
-            return client
         else:
             print('Nie zaktualizowano klienta w cache')
 

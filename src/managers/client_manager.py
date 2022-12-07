@@ -115,9 +115,9 @@ class ClientManager:
     @update_client_decorator
     def update_client(_id, new_value) -> None:
         client_collection = get_collection('clients')
-        client = client_collection.update_one({'_id': _id}, {'$set': new_value})
+        client_collection.update_one({'_id': _id}, {'$set': new_value})
         print('Pomyslnie zaaktualizowane dane klienta o UUID: {}'.format(_id))
-        return client
+        return _id
 
     @staticmethod
     def update_client_address(_id, city, street, number) -> None:
