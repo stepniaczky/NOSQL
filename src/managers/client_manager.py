@@ -13,7 +13,7 @@ from src.db import get_collection, hash_prefix, get_redis_client
 class ClientManager:
     @staticmethod
     @add_client_decorator
-    def add_client(pesel, first_name, last_name, birth_date, is_premium, city, street, number) -> Client | None:
+    def add_client(pesel, first_name, last_name, birth_date, is_premium, city, street, number):
         if len(pesel) != 11:
             print("Pesel musi mieć 11 znaków!")
             return
